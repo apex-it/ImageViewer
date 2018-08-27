@@ -230,7 +230,7 @@
                         left: imgLeft,
                         top: imgTop
                     })
-                }
+                },
             }).init();
 
 
@@ -395,6 +395,8 @@
             var touchtime = 0,
                 point;
             imageWrap.on('click' + eventSuffix, function (e) {
+                viewer.click(e);
+
                 if (touchtime == 0) {
                     touchtime = Date.now();
                     point = {
@@ -437,7 +439,7 @@
                     var zoomValue = 100 + (options.maxZoom - 100) * newLeft / viewer._zoomSliderLength;
 
                     viewer.zoom(zoomValue);
-                }
+                },
             }).init();
 
 
@@ -516,7 +518,7 @@
             self._clearFrames();
 
             var step = 0;
-            
+
             //calculate base top,left,bottom,right
             var containerDim = self.containerDim,
                 imageDim = self.imageDim;
@@ -540,20 +542,20 @@
                     imgHeight = self.imageDim.h * tickZoom / 100,
                     newLeft = -((point.x - curLeft) * ratio - point.x),
                     newTop = -((point.y - curTop) * ratio - point.y);
-                
+
                 //fix for left and top
                 newLeft = Math.min(newLeft, baseLeft);
                 newTop = Math.min(newTop, baseTop);
-                
+
                 //fix for right and bottom
                 if((newLeft + imgWidth) < baseRight){
                     newLeft = baseRight - imgWidth; //newLeft - (newLeft + imgWidth - baseRight)
                 }
-                
-                if((newTop + imgHeight) < baseBottom){            
+
+                if((newTop + imgHeight) < baseBottom){
                     newTop =  baseBottom - imgHeight; //newTop + (newTop + imgHeight - baseBottom)
                 }
-                
+
 
                 curImg.css({
                     height: imgHeight + 'px',
@@ -568,6 +570,10 @@
 
                 //update zoom handle position
                 self.zoomHandle.css('left', ((tickZoom - 100) * self._zoomSliderLength) / (maxZoom - 100) + 'px');
+
+                if (self.onZoom) {
+                    self.onZoom(self.calcThings());
+                }
             }
 
             zoom();
@@ -732,7 +738,36 @@
                 $(currentImg[0]).on('load', refreshView);
             }
 
-        }
+        },
+        calcThings: function (e) {
+            var d = {
+                zoomValue: this.zoomValue,
+                image: {
+                    width: this.currentImg.width(),
+                    height: this.currentImg.height(),
+                    naturalWidth: this.currentImg.get(0).naturalWidth,
+                    naturalHeight: this.currentImg.get(0).naturalHeight,
+                    offset: this.currentImg.offset(),
+                },
+                container: { width: this.container.width(), height: this.container.height() }
+            };
+
+            if (e) {
+                d.event = e;
+                d.offset = { x: e.offsetX, y: e.offsetY };
+                d.page = { x: e.pageX, y: e.pageY };
+                d.screen = { x: e.screenX, y: e.screenY };
+            }
+
+            return d;
+        },
+        onClick: null,
+        click: function (e) {
+            if (this.onClick) {
+                this.onClick(this.calcThings(e));
+            }
+        },
+        onZoom: null,
     }
 
     ImageViewer.defaults = {
