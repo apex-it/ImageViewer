@@ -12,9 +12,11 @@
     //an empty function
     var noop = function () {};
 
-    var $body = $('body'),
-        $window = $(window),
-        $document = $(document);
+    console.log(angular);
+
+    var $body = angular.element(document.body), // $('body'),
+        $window = angular.element(window), // $(window),
+        $document = angular.element(document); // $(document);
 
 
     //constants
@@ -75,8 +77,15 @@
     var imageViewHtml = '<div class="iv-loader"></div> <div class="iv-snap-view">' + '<div class="iv-snap-image-wrap">' + '<div class="iv-snap-handle"></div>' + '</div>' + '<div class="iv-zoom-slider"><div class="iv-zoom-handle"></div></div></div>' + '<div class="iv-image-view" ><div class="iv-image-wrap" ></div></div>';
 
     //add a full screen view
+    /*
     $(function () {
-        if(!$body.length) $body = $('body');
+        if(!$body.length) $body = angular.element(document.body); //$('body');
+        $body.append('<div id="iv-container">' + imageViewHtml + '<div class="iv-close"></div><div>');
+    });
+    */
+
+    angular.element(function () {
+        if(!$body.length) $body = angular.element(document.body); //$('body');
         $body.append('<div id="iv-container">' + imageViewHtml + '<div class="iv-close"></div><div>');
     });
 
@@ -782,7 +791,7 @@
         var imgElm, imgSrc, hiResImg;
         if (!(container && (typeof container == "string" || container instanceof Element || container[0] instanceof Element))) {
             options = container;
-            container = $('#iv-container');
+            container = angular.element(document.getElementById('#iv-container')); // $('#iv-container');
         }
 
         container = $(container);
@@ -812,6 +821,7 @@
     };
 
 
+    /*
     $.fn.ImageViewer = function (options) {
         return this.each(function () {
             var $this = $(this);
@@ -819,5 +829,6 @@
             $this.data('ImageViewer', viewer);
         });
     }
+    */
 
 }((window.jQuery), window, document));
